@@ -4,24 +4,115 @@ import ControlButton from './ControlButton';
 import GameGrid from './GameGrid';
 
 class Game extends React.Component {
-  render() {
-    const rows = 25;
-    const columns = 25;
+  constructor(props) {
+    super(props);
+    this.rows = 25;
+    this.columns = 25;
+    this.runningTimerId = null;
+    this.state = {
+      gameState: this.initialGameState(this.rows, this.columns),
+      running: false
+    }
+    this.toggleState = this.toggleState.bind(this);
+    this.resetGame = this.resetGame.bind(this);
+    this.setRunning = this.setRunning.bind(this);
+    this.nextIteration = this.nextIteration.bind(this);
+    this.getLiveNeighbours = this.getLiveNeighbours.bind(this);
+  }
+
+  initialGameState(rows, columns) {
     let gameState = [];
     for (let i = 0; i < rows; i++) {
       let row = [];
       for (let j = 0; j < columns; j++) {
-        row.push(Math.round(Math.random()));
+        row.push(0);
       }
       gameState.push(row);
     }
+    return gameState;
+  }
 
+  toggleState(rowIndex, columnIndex, newState) {
+    let updatedGameState = this.state.gameState.map(row => row.slice());
+    if (newState === undefined || newState === null) {
+      updatedGameState[rowIndex][columnIndex] = !updatedGameState[rowIndex][columnIndex];
+    } else {
+      updatedGameState[rowIndex][columnIndex] = newState;
+    }
+    this.setState({ gameState: updatedGameState });
+  }
+
+  setRunning(newRunning) {
+    this.setState({
+      ...this.state,
+      running: newRunning
+    });
+
+    if (newRunning) {
+      this.nextIteration();
+      this.runningTimerId = setInterval(this.nextIteration, 100);
+    } else {
+      clearInterval(this.runningTimerId);
+    }
+  }
+
+  nextIteration() {
+    // Conway's Game of Life logic.
+    let updatedGameState = this.state.gameState.map(row => row.slice());
+    let nextGameState = updatedGameState.map((row, rowIndex) => {
+      return row.map((cellState, columnIndex) => {
+        const liveNeighbours = this.getLiveNeighbours(this.state.gameState, rowIndex, columnIndex);
+        if (cellState && (liveNeighbours === 2 || liveNeighbours === 3)) return 1;
+        if (!cellState && liveNeighbours === 3) return 1;
+        return 0;
+      });
+    });
+    this.setState({gameState: nextGameState});
+  }
+
+  getLiveNeighbours(gameState, rowIndex, columnIndex) {
+    let liveNeighbours = 0;
+    for (let y = -1; y <= 1; y++) {
+      for (let x = -1; x <= 1; x++) {
+        if (x === 0 && y === 0) continue;
+
+        let neighbourRow = rowIndex + y;
+        if (neighbourRow < 0) {
+          neighbourRow = this.rows - 1;
+        } else if (neighbourRow >= this.rows) {
+          neighbourRow = 0;
+        }
+        
+        let neighbourColumn = columnIndex + x;
+        if (neighbourColumn < 0) {
+          neighbourColumn = this.columns - 1;
+        } else if (neighbourColumn >= this.columns) {
+          neighbourColumn = 0;
+        }
+
+        if (gameState[neighbourRow][neighbourColumn]) {
+          liveNeighbours++;
+        };
+      }
+    }
+    return liveNeighbours;
+  }
+
+  resetGame() {
+    clearInterval(this.runningTimerId);
+    this.setState({
+      gameState: this.initialGameState(this.rows, this.columns),
+      running: false
+    });
+  }
+
+  render() {
     return (
       <div className={'game'}>
-        <GameGrid gameState={gameState} />
+        <GameGrid toggleState={this.toggleState} gameState={this.state.gameState} />
         <div className={'controls'}>
-          <ControlButton text={'Start'} />
-          <ControlButton text={'Clear'} />
+          <ControlButton type={'start'} setRunning={this.setRunning} running={this.state.running} />
+          <ControlButton type={'reset'} resetGame={this.resetGame} />
         </div>
       </div>
     );
