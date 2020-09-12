@@ -1,0 +1,13 @@
+.game-cell {
+    height: 1em;
+    width: 1em;
+    border: 1px solid black;
+}
+
+.on {
+    background-color: cornflowerblue;
+}
+
+.off {
+    background-color: whitesmoke;
+}
