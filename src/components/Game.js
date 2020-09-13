@@ -66,9 +66,9 @@ class Game extends React.Component {
     let nextGameState = this.state.gameState.map((row, rowIndex) =>
       row.map((cellState, columnIndex) => {
         const liveNeighbours = this.getLiveNeighbours(this.state.gameState, rowIndex, columnIndex);
-        if (cellState && (liveNeighbours === 2 || liveNeighbours === 3)) return 1;
-        if (!cellState && liveNeighbours === 3) return 1;
-        return 0;
+        if (cellState && (liveNeighbours === 2 || liveNeighbours === 3)) return true;
+        if (!cellState && liveNeighbours === 3) return true;
+        return false;
       })
     );
     this.setState({

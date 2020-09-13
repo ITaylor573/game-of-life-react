@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import './GameGrid.css';
 import GameCell from './GameCell';
 
@@ -38,6 +39,11 @@ class GameGrid extends React.Component {
       </table>
     );
   }
+}
+
+GameGrid.propTypes = {
+  toggleState: PropTypes.func.isRequired,
+  gameState: PropTypes.array.isRequired
 }
 
 export default GameGrid;

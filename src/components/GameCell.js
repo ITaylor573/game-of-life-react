@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import './GameCell.css';
 
 function GameCell({ ...props }) {
@@ -15,6 +16,14 @@ function GameCell({ ...props }) {
 
     let className = 'game-cell ' + (props.cellState ? 'on' : 'off');
     return <td onMouseDown={handleClick} onMouseEnter={handleMouseEnter} className={className} />
+}
+
+GameCell.propTypes = {
+    setClickedState: PropTypes.func.isRequired,
+    toggleState: PropTypes.func.isRequired,
+    cellState: PropTypes.bool.isRequired,
+    rowIndex: PropTypes.number.isRequired,
+    columnIndex: PropTypes.number.isRequired
 }
 
 export default GameCell;
