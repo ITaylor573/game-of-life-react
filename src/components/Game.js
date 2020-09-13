@@ -8,9 +8,11 @@ class Game extends React.Component {
     super(props);
     this.rows = 25;
     this.columns = 25;
+    this.speed = 100 // milliseconds.
     this.runningTimerId = null;
+    let gameState = this.initialGameState(this.rows, this.columns)
     this.state = {
-      gameState: this.initialGameState(this.rows, this.columns),
+      gameState: gameState,
       running: false
     }
     this.toggleState = this.toggleState.bind(this);
@@ -43,14 +45,10 @@ class Game extends React.Component {
   }
 
   setRunning(newRunning) {
-    this.setState({
-      ...this.state,
-      running: newRunning
-    });
-
+    this.setState({ running: newRunning });
     if (newRunning) {
       this.nextIteration();
-      this.runningTimerId = setInterval(this.nextIteration, 100);
+      this.runningTimerId = setInterval(this.nextIteration, this.speed);
     } else {
       clearInterval(this.runningTimerId);
     }
@@ -58,16 +56,15 @@ class Game extends React.Component {
 
   nextIteration() {
     // Conway's Game of Life logic.
-    let updatedGameState = this.state.gameState.map(row => row.slice());
-    let nextGameState = updatedGameState.map((row, rowIndex) => {
-      return row.map((cellState, columnIndex) => {
+    let nextGameState = this.state.gameState.map((row, rowIndex) =>
+      row.map((cellState, columnIndex) => {
         const liveNeighbours = this.getLiveNeighbours(this.state.gameState, rowIndex, columnIndex);
         if (cellState && (liveNeighbours === 2 || liveNeighbours === 3)) return 1;
         if (!cellState && liveNeighbours === 3) return 1;
         return 0;
-      });
-    });
-    this.setState({gameState: nextGameState});
+      })
+    );
+    this.setState({ gameState: nextGameState, });
   }
 
   getLiveNeighbours(gameState, rowIndex, columnIndex) {
@@ -82,7 +79,7 @@ class Game extends React.Component {
         } else if (neighbourRow >= this.rows) {
           neighbourRow = 0;
         }
-        
+
         let neighbourColumn = columnIndex + x;
         if (neighbourColumn < 0) {
           neighbourColumn = this.columns - 1;
@@ -102,7 +99,7 @@ class Game extends React.Component {
     clearInterval(this.runningTimerId);
     this.setState({
       gameState: this.initialGameState(this.rows, this.columns),
-      running: false
+      running: false,
     });
   }
 
@@ -113,6 +110,7 @@ class Game extends React.Component {
         <div className={'controls'}>
           <ControlButton type={'start'} setRunning={this.setRunning} running={this.state.running} />
           <ControlButton type={'reset'} resetGame={this.resetGame} />
+          <ControlButton type={'next'} setRunning={this.setRunning} nextIteration={this.nextIteration} />
         </div>
       </div>
     );
