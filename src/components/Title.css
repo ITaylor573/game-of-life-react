@@ -1,4 +1,11 @@
-.title {
+.heading {
     text-align: center;
     color: hsl(220, 80%, 66%);
+    margin: 0;
+}
+
+.sub-heading {
+    color: hsl(220, 80%, 66%);
+    font-size: 1em;
+    vertical-align: super;
 }

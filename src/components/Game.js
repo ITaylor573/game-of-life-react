@@ -2,7 +2,6 @@ import React from 'react';
 import './Game.css';
 import ControlButton from './ControlButton';
 import GameGrid from './GameGrid';
-import Counter from './Counter';
 
 class Game extends React.Component {
   constructor(props) {
@@ -11,25 +10,31 @@ class Game extends React.Component {
     this.columns = 25;
     this.speed = 100 // milliseconds.
     this.runningTimerId = null;
-    let gameState = this.initialGameState(this.rows, this.columns);
+
     this.state = {
-      gameState: gameState,
+      gameState: this.initialGameState(this.rows, this.columns, this.randomBoardGenerator),
       running: false,
       iteration: 0
     }
+
     this.toggleState = this.toggleState.bind(this);
-    this.resetGame = this.resetGame.bind(this);
     this.setRunning = this.setRunning.bind(this);
     this.nextIteration = this.nextIteration.bind(this);
     this.getLiveNeighbours = this.getLiveNeighbours.bind(this);
+    this.handlePlayClick = this.handlePlayClick.bind(this);
+    this.handleResetClick = this.handleResetClick.bind(this);
+    this.handleNextClick = this.handleNextClick.bind(this);
+    this.handleRandomClick = this.handleRandomClick.bind(this);
   }
 
-  initialGameState(rows, columns) {
+  randomBoardGenerator = () => Math.random() > 0.5;
+
+  initialGameState(rows, columns, generator = () => false) {
     let gameState = [];
     for (let i = 0; i < rows; i++) {
       let row = [];
       for (let j = 0; j < columns; j++) {
-        row.push(0);
+        row.push(generator());
       }
       gameState.push(row);
     }
@@ -100,11 +105,28 @@ class Game extends React.Component {
     return liveNeighbours;
   }
 
-  resetGame() {
+  handleResetClick() {
     clearInterval(this.runningTimerId);
     this.setState({
       gameState: this.initialGameState(this.rows, this.columns),
       running: false,
+      iteration: 0
+    });
+  }
+
+  handlePlayClick() {
+    this.setRunning(!this.state.running);
+  }
+
+  handleNextClick() {
+    this.setRunning(false);
+    this.nextIteration();
+  }
+
+  handleRandomClick() {
+    this.setRunning(false);
+    this.setState({
+      gameState: this.initialGameState(this.rows, this.columns, this.randomBoardGenerator),
       iteration: 0
     });
   }
@@ -114,12 +136,16 @@ class Game extends React.Component {
       <div className={'game'}>
         <GameGrid toggleState={this.toggleState} gameState={this.state.gameState} />
         <div className={'controls'}>
-          <ControlButton type={'start'} setRunning={this.setRunning} running={this.state.running} />
-          <ControlButton type={'reset'} resetGame={this.resetGame} />
-          <ControlButton type={'next'} setRunning={this.setRunning} nextIteration={this.nextIteration} />
+          <ControlButton handleClick={this.handlePlayClick}>
+            {this.state.running ? 'PAUSE' : 'PLAY'}
+          </ControlButton>
+          <ControlButton handleClick={this.handleResetClick}>RESET</ControlButton>
+          <ControlButton handleClick={this.handleNextClick}>NEXT</ControlButton>
+          <ControlButton handleClick={this.handleRandomClick}>RANDOM</ControlButton>
         </div>
         <div className={'information'}>
-          <Counter count={this.state.iteration} text={'Iteration'} />
+          <p>Iteration: {this.state.iteration}</p>
+          <p>Click and drag on the grid to add or remove cells</p>
         </div>
       </div>
     );
