@@ -2,3 +2,8 @@
   text-align: center;
   position: relative;
 }
+
+.controls {
+  position: absolute;
+  display: inline;
+}

@@ -25,7 +25,7 @@ class GameGrid extends React.Component {
             rowIndex={rowIndex}
             columnIndex={columnIndex}
             cellState={cellState}
-            key={rowIndex.toString() + columnIndex.toString()} />
+            key={rowIndex + "-" + columnIndex} />
         )}
       </tr>
     );
