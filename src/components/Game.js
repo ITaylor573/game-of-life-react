@@ -2,6 +2,7 @@ import React from 'react';
 import './Game.css';
 import ControlButton from './ControlButton';
 import GameGrid from './GameGrid';
+import Counter from './Counter';
 
 class Game extends React.Component {
   constructor(props) {
@@ -10,10 +11,11 @@ class Game extends React.Component {
     this.columns = 25;
     this.speed = 100 // milliseconds.
     this.runningTimerId = null;
-    let gameState = this.initialGameState(this.rows, this.columns)
+    let gameState = this.initialGameState(this.rows, this.columns);
     this.state = {
       gameState: gameState,
-      running: false
+      running: false,
+      iteration: 0
     }
     this.toggleState = this.toggleState.bind(this);
     this.resetGame = this.resetGame.bind(this);
@@ -64,7 +66,10 @@ class Game extends React.Component {
         return 0;
       })
     );
-    this.setState({ gameState: nextGameState, });
+    this.setState({
+      gameState: nextGameState,
+      iteration: this.state.iteration + 1
+    });
   }
 
   getLiveNeighbours(gameState, rowIndex, columnIndex) {
@@ -100,6 +105,7 @@ class Game extends React.Component {
     this.setState({
       gameState: this.initialGameState(this.rows, this.columns),
       running: false,
+      iteration: 0
     });
   }
 
@@ -111,6 +117,9 @@ class Game extends React.Component {
           <ControlButton type={'start'} setRunning={this.setRunning} running={this.state.running} />
           <ControlButton type={'reset'} resetGame={this.resetGame} />
           <ControlButton type={'next'} setRunning={this.setRunning} nextIteration={this.nextIteration} />
+        </div>
+        <div className={'information'}>
+          <Counter count={this.state.iteration} text={'Iteration'} />
         </div>
       </div>
     );

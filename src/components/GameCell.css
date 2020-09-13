@@ -1,13 +1,13 @@
 .game-cell {
     height: 1em;
     width: 1em;
-    border: 1px solid black;
+    border-radius: 5px
 }
 
 .on {
-    background-color: cornflowerblue;
+    background-color: hsl(220, 80%, 66%);
 }
 
 .off {
-    background-color: whitesmoke;
+    background-color: hsl(0, 0%, 20%);
 }
