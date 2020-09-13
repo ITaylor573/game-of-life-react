@@ -2,7 +2,7 @@
   "name": "game_of_life",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://itaylor573.github.io/game-of-life/",
+  "homepage": "https://itaylor573.github.io/game-of-life-react/",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
